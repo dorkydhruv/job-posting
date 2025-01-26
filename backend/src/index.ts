@@ -30,6 +30,25 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+    mongoConnection:
+      mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+  };
+
+  try {
+    res.status(200).json(healthcheck);
+  } catch (error) {
+    healthcheck.message = `Failed with error: ${error}`;
+    res.status(503).json(healthcheck);
+  }
+});
+
 app.use(CompanyRouter);
 app.use(ClientRouter);
 
