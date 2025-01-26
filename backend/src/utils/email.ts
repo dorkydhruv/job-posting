@@ -17,7 +17,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     },
     content: {
       subject: "Email Verification",
-      html: `Click <a href="${process.env.BASE_URL}/verify-email?token=${token}">here</a> to verify your email`,
+      html: `Click <a href="${process.env.CLIENT_URL}/verify-email?token=${token}">here</a> to verify your email`,
     },
   });
   await poller.pollUntilDone();

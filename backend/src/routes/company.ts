@@ -4,9 +4,9 @@ import { Company, Job } from "../model";
 import { sendVerificationEmail, sendJobAlert } from "../utils/email";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import dotenv from "dotenv";
 const router = express.Router();
-
+dotenv.config();
 // Company Registration
 router.post("/register", async (req, res) => {
   try {
@@ -59,8 +59,7 @@ router.get("/verify-email", async (req, res) => {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    //todo
-    res.redirect("/dashboard"); // Redirect to frontend dashboard
+    res.json({ response: true });
   } catch (err) {
     res.status(400).json({ error: "Verification failed" });
   }
@@ -82,7 +81,6 @@ router.post("/login", async (req, res) => {
   res.cookie("jwt", token, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: "lax",
   });
   res.json({ message: "Login successful" });
 });
@@ -109,5 +107,30 @@ router.post("/jobs", authenticate, checkVerification, async (req, res) => {
   }
 });
 
+router.delete("/jobs/:id", authenticate, async (req, res) => {
+  try {
+    const job = await Job.findOneAndDelete({
+      _id: req.params.id,
+    });
+
+    if (!job) {
+      res.status(404).json({ error: "Job not found" });
+      return;
+    }
+
+    res.json({ message: "Job deleted" });
+  } catch (err) {
+    res.status(400).json({ error: "Job deletion failed" });
+  }
+});
+
+router.get("/my-jobs", authenticate, async (req, res) => {
+  try {
+    const jobs = await Job.find({ company: req.company._id });
+    res.json(jobs);
+  } catch (err) {
+    res.status(400).json({ error: "Job retrieval failed" });
+  }
+});
 
 export default router;

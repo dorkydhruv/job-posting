@@ -12,12 +12,14 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-cors({
-  origin: "*",
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-});
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 // Connect to MongoDB
 mongoose
