@@ -58,6 +58,7 @@ router.get("/verify-email", async (req, res) => {
     res.cookie("jwt", authToken, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
     });
     res.json({ response: true });
   } catch (err) {
@@ -81,6 +82,7 @@ router.post("/login", async (req, res) => {
   res.cookie("jwt", token, {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === "production",
   });
   res.json({ message: "Login successful" });
 });
